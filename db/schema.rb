@@ -10,10 +10,48 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_21_080103) do
+ActiveRecord::Schema.define(version: 2019_05_21_085031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cards", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.bigint "user_id"
+    t.bigint "deck_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deck_id"], name: "index_cards_on_deck_id"
+    t.index ["user_id"], name: "index_cards_on_user_id"
+  end
+
+  create_table "decks", force: :cascade do |t|
+    t.string "title"
+    t.bigint "user_id"
+    t.bigint "table_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_id"], name: "index_decks_on_table_id"
+    t.index ["user_id"], name: "index_decks_on_user_id"
+  end
+
+  create_table "invites", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "table_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["table_id"], name: "index_invites_on_table_id"
+    t.index ["user_id"], name: "index_invites_on_user_id"
+  end
+
+  create_table "tables", force: :cascade do |t|
+    t.string "title"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_tables_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -27,4 +65,11 @@ ActiveRecord::Schema.define(version: 2019_05_21_080103) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "cards", "decks"
+  add_foreign_key "cards", "users"
+  add_foreign_key "decks", "tables"
+  add_foreign_key "decks", "users"
+  add_foreign_key "invites", "tables"
+  add_foreign_key "invites", "users"
+  add_foreign_key "tables", "users"
 end
